@@ -16,6 +16,8 @@
         "src/app.js",
         "src/Fighter.js",
         "src/Bullet.js",
-        "src/ObjectPool.js"
+        "src/ObjectPool.js",
+        "src/EnemyFighter.js",
+        "src/PlayerFighter.js"
     ]
 }

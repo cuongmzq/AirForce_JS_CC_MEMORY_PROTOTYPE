@@ -48,7 +48,7 @@ let ObjectPool = cc.Class.extend({
         }
 
         //Search from beginning
-        for (let id = 0; id < this.currentAvailableID; ++id) {
+        for (let id = 0; id < this.currentAvailableID; id++) {
             if (this.objectList[id] !== null && !this.objectList[id].isUsed) {
                 this.objectList[id].setVisible(true);
                 this.objectList[id].isUsed = true;
@@ -56,12 +56,12 @@ let ObjectPool = cc.Class.extend({
             }
         }
 
-        this.currentAvailableID = tempID;
-
         if (this.autoExpand) {
+            this.currentAvailableID = tempID;
             let obj = this.creator();
             obj.poolID = tempID;
             obj.isUsed = true;
+            obj.setVisible(true);
             this.objectList.push(obj);
             this.currentAmount++;
             return obj;
