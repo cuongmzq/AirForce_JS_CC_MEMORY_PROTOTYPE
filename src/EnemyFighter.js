@@ -1,11 +1,32 @@
+// let AreaManager = cc.Class.extend({
+//    ctor: function () {
+//         this.areaList = [];
+//
+//    }
+// });
+//
+// let Area = {
+//     entity: [],
+//     minX: 0,
+//     maxX: 0,
+//     minY: 0,
+//     maxY: 0
+// };
+
 let EnemyFighter = Fighter.extend({
     ctor: function (manager, res) {
         this._super(manager, res);
+        this.areaID = -1;
         this.flippedY = true;
         this.scheduleUpdate();
     },
     update: function (dt) {
-        // this._super(dt);
+        if (this.fireEstimatedTime > 0) {
+            this.fireEstimatedTime -= dt;
+        } else {
+            this.fireEstimatedTime = this.fireRate;
+        }
+
         this.move(dt);
 
         if (this.fireEstimatedTime <= 0)
@@ -19,14 +40,6 @@ let EnemyFighter = Fighter.extend({
     },
 
     move: function (dt) {
-        // if (this.x <= -this.manager.fighterSize.width ||
-        //     this.x >= cc.winSize.width + this.manager.fighterSize.width ||
-        //     this.y <= -this.manager.fighterSize.width ||
-        //     this.y >= cc.winSize.height + this.manager.fighterSize.width)
-        // {
-        //
-        // }
-
         if (this.x <= -this.manager.fighterSize.width) {
             this.x = 0.5;
             if (this.direction.x < 0) {
@@ -60,11 +73,9 @@ let EnemyFighter = Fighter.extend({
         // this.manager.enemyFighterPositionList[this.id].y = this.y;
 
         this.setRotation(this.manager.pAngleSigned(vectorUp, this.direction) * cc.DEG);
-        // this.manager.pRotateByAngleVectorOne(this.direction, angle);
     },
 
     fire: function () {
-        this._super();
         if (this.bulletPool !== null) {
             this.currentBullet = this.bulletPool.takeOut();
             if (this.currentBullet) {
@@ -77,7 +88,6 @@ let EnemyFighter = Fighter.extend({
             }
 
             //Need attention on monitor usedAmount!
-            //cc.log(this.bulletPool.objectList, this.bulletPool.usedAmount, this.bulletPool.currentAvailableID);
         }
     },
 

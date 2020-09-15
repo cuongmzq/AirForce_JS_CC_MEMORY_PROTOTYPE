@@ -24,40 +24,10 @@ let MainGameLayer = cc.Layer.extend({
         this.createFighter();
         this.setScale(1);
         this.scheduleUpdate();
-
-        cc.eventManager.addListener({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            onTouchBegan: (touch) => {
-                touchRawPosition.x = touch.getLocationX();
-                touchRawPosition.y = touch.getLocationY();
-                touchPosition = this.convertToNodeSpace(touchRawPosition);
-                this.isTouching = true;
-                return true;
-            },
-            onTouchMoved: (touch) => {
-                touchRawPosition.x = touch.getLocationX();
-                touchRawPosition.y = touch.getLocationY();
-                touchPosition = this.convertToNodeSpace(touchRawPosition);
-            },
-            onTouchEnded: (touch) => {
-                this.isTouching = false;
-            }
-        }, this);
     },
 
     update: function (dt) {
-        this.rotateFighterToTouch();
-        //
-        // if (this.isTouching && this.fighter.fireEstimatedTime <= 0) {
-        //     this.fighter.fire();
-        // }
-    },
-
-    rotateFighterToTouch: function () {
-        this.playerRotateDirection.x = touchPosition.x - this.fighter.x;
-        this.playerRotateDirection.y = touchPosition.y - this.fighter.y;
-        let rotation = this.pAngleSigned(vectorUp, this.playerRotateDirection) * cc.DEG;
-        this.fighter.setRotationX(rotation);
+        // this.rotateFighterToTouch();
     },
 
     pAngleSigned: function (aX, aY, bX, bY) {
@@ -111,7 +81,6 @@ let MainGameLayer = cc.Layer.extend({
 
     },
     pRotateByAngleVectorOne: function (directionVector, radianAngle) {
-        //v(0, 1) p(0, 0) sub: 0, 1
         directionVector.x = -Math.sin(radianAngle);
         directionVector.y = Math.cos(radianAngle);
     },
@@ -156,7 +125,7 @@ let MainGameLayer = cc.Layer.extend({
 
         for (let i = 0; i < this.enemyCount; ++i) {
             let enemyFighter = new EnemyFighter(this, res.enemyFighter);
-            enemyFighter.fireRate = 0.1;
+            enemyFighter.fireRate = 0.05;
             enemyFighter.id = i;
             enemyFighter.speed = Math.random() * 6 + 2;
 
@@ -174,7 +143,7 @@ let MainGameLayer = cc.Layer.extend({
             this.pRotateByAngleVectorOne(enemyFighter.direction, angle);
 
             this.addChild(enemyFighter, Math.floor(Math.random() * 8 + 4));
-            enemyFighter.createBulletPool(5, false, res.bullet_02);
+            enemyFighter.createBulletPool(50, true, res.bullet_02);
             let enemyPosition = cc.p(enemyFighter.x, enemyFighter.y);
             this.enemyFighterPositionList.push(enemyPosition);
             this.enemyFighterList.push(enemyFighter);
@@ -189,4 +158,4 @@ let MainGameScene = cc.Scene.extend({
         let layer = new MainGameLayer();
         this.addChild(layer);
     }
-})
+});

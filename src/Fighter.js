@@ -10,15 +10,20 @@ let Fighter = cc.Sprite.extend({
         this.direction = cc.p(0, 0);
         this.id = -1;
         this.speed = 2;
-
-        // this.setTexture(res);
     },
     update: function (dt) {
-        if (this.fireEstimatedTime > 0) {
-            this.fireEstimatedTime -= dt;
-        } else {
-            this.fireEstimatedTime = this.fireRate;
-        }
+        // if (this.fireEstimatedTime > 0) {
+        //     this.fireEstimatedTime -= dt;
+        // } else {
+        //     this.fireEstimatedTime = this.fireRate;
+        // }
+        //
+        // this.move(dt);
+        //
+        // if (this.fireEstimatedTime <= 0)
+        // {
+        //     this.fire();
+        // }
     },
 
     //Please call this after run ctor()
