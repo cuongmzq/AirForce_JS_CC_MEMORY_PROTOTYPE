@@ -2,7 +2,7 @@ let vectorUp = {x: 0, y: 1};
 let vectorDown = {x: 0, y: -1};
 let touchPosition = cc.p(0, 0);
 let touchRawPosition = cc.p(0, 0);
-cc.log = function () {};
+// cc.log = function () {};
 
 let MainGameLayer = cc.Layer.extend({
     ctor: function () {

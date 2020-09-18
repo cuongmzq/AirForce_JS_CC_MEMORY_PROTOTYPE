@@ -38,6 +38,10 @@ include(CocosBuildSet)
 set(BUILD_JS_LIBS ON)
 add_subdirectory(${COCOS2DX_ROOT_PATH}/cocos ${ENGINE_BINARY_PATH}/cocos/core)
 
+set(GAME_RES_FOLDER
+    "${CMAKE_CURRENT_SOURCE_DIR}/Resources"
+    )
+
 # script and source files info, not need to compile
 set(res_main_files
     "${CMAKE_CURRENT_SOURCE_DIR}/main.js"
@@ -61,8 +65,24 @@ if(APPLE OR VS)
 endif()
 
 # record sources, headers
-set(GAME_SOURCE ${RUNTIME_SRC_ROOT}/Classes/AppDelegate.cpp)
-set(GAME_HEADER ${RUNTIME_SRC_ROOT}/Classes/AppDelegate.h)
+# set(GAME_SOURCE 
+# ${RUNTIME_SRC_ROOT}/Classes/AppDelegate.cpp
+# ${RUNTIME_SRC_ROOT}/Classes/HelloWorldScene.cpp
+# )
+# set(GAME_HEADER 
+# ${RUNTIME_SRC_ROOT}/Classes/AppDelegate.h
+# ${RUNTIME_SRC_ROOT}/Classes/HelloWorldScene.h
+# )
+
+# add cross-platforms source files and header files 
+list(APPEND GAME_SOURCE
+     ${RUNTIME_SRC_ROOT}/Classes/AppDelegate.cpp
+     ${RUNTIME_SRC_ROOT}/Classes/HelloWorldScene.cpp
+     )
+list(APPEND GAME_HEADER
+     ${RUNTIME_SRC_ROOT}/Classes/AppDelegate.h
+     ${RUNTIME_SRC_ROOT}/Classes/HelloWorldScene.h
+     )
 
 if(ANDROID)
     # change APP_NAME to the share library name for Android, it's value depend on AndroidManifest.xml

@@ -90,6 +90,7 @@ cc.game.onStart = function(){
         sys.browserType !== sys.BROWSER_TYPE_WECHAT) {
         cc.view.enableAutoFullScreen(true);
     }
+    
 
     // Adjust viewport meta
     cc.view.adjustViewPort(true);
@@ -103,9 +104,12 @@ cc.game.onStart = function(){
     // The game will be resized when browser size change
     cc.view.resizeWithBrowserSize(true);
 
+    cc.log("rung game js");
+
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
         cc.director.runScene(new MainGameScene());
     }, this);
 };
+
 cc.game.run();

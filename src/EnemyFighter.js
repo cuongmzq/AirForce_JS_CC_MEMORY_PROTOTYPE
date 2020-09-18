@@ -1,18 +1,3 @@
-// let AreaManager = cc.Class.extend({
-//    ctor: function () {
-//         this.areaList = [];
-//
-//    }
-// });
-//
-// let Area = {
-//     entity: [],
-//     minX: 0,
-//     maxX: 0,
-//     minY: 0,
-//     maxY: 0
-// };
-
 let EnemyFighter = Fighter.extend({
     ctor: function (manager, res) {
         this._super(manager, res);
