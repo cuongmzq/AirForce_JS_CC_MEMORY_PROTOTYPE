@@ -3,6 +3,7 @@ let EnemyFighter = Fighter.extend({
         this._super(manager, res);
         this.areaID = -1;
         this.flippedY = true;
+        entityManager.insert(this);
         this.scheduleUpdate();
     },
     update: function (dt) {
@@ -18,6 +19,8 @@ let EnemyFighter = Fighter.extend({
         {
             this.fire();
         }
+
+        areaManager.updateEntityArea(this, this.manager.fighterSize.width, this.manager.fighterSize.height);
     },
 
     createBulletPool: function (amount, autoExpand = true, res = "#Laser_Large_png_processed.png") {
@@ -53,9 +56,6 @@ let EnemyFighter = Fighter.extend({
 
         this.x += dt * this.direction.x * this.speed * 60;
         this.y += dt * this.direction.y * this.speed * 60;
-        //
-        // this.manager.enemyFighterPositionList[this.id].x = this.x;
-        // this.manager.enemyFighterPositionList[this.id].y = this.y;
 
         this.setRotation(this.manager.pAngleSigned(vectorUp, this.direction) * cc.DEG);
     },

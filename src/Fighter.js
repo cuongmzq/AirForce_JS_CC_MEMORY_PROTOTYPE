@@ -12,18 +12,7 @@ let Fighter = cc.Sprite.extend({
         this.speed = 2;
     },
     update: function (dt) {
-        // if (this.fireEstimatedTime > 0) {
-        //     this.fireEstimatedTime -= dt;
-        // } else {
-        //     this.fireEstimatedTime = this.fireRate;
-        // }
-        //
-        // this.move(dt);
-        //
-        // if (this.fireEstimatedTime <= 0)
-        // {
-        //     this.fire();
-        // }
+
     },
 
     //Please call this after run ctor()

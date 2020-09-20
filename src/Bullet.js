@@ -18,15 +18,47 @@ let Bullet = cc.Sprite.extend({
         this.manager = fighter.manager;
         this.id = -444;
         this.canMove = false;
-        this.speed = 15;
+        this.speed = 10;
         this.direction = cc.p(0, 0);
+        this.enableDebug = false;
+        entityManager.insert(this);
+        areaManager.updateEntityArea(this, this.manager.bulletSize.width, this.manager.bulletSize.height);
+
+        if (false) {
+            this.debugDrawList = new Array(4);
+            for (let i = 0; i < 4; ++i) {
+                let drawNode = new cc.DrawNode();
+                let startPoint = cc.p(this.x - areaManager.cellWidth / 2, this.y - areaManager.cellHeight / 2);
+                let endPoint = cc.p(this.x + areaManager.cellWidth / 2, this.y + areaManager.cellHeight / 2)
+                drawNode.drawRect(startPoint, endPoint, cc.color(255, 255, 0, 0), 3, cc.color(255, 255, 0));
+                this.manager.addChild(drawNode, 999);
+                this.debugDrawList[i] = drawNode;
+                drawNode.setVisible(false);
+            }
+            this.enableDebug = true;
+        }
     },
     update: function (dt) {
-        this.move(dt);
-        this.bouncing();
-        if (this.fighter.id === -555)
-        {
-            this.collisionDetection();
+        if (this.canMove) {
+            this.move(dt);
+            this.bouncing();
+
+            if (this.fighter.id === -555) {
+                this.collisionDetection();
+            }
+            areaManager.updateEntityArea(this, this.manager.bulletSize.width, this.manager.bulletSize.height);
+        }
+
+        if (this.enableDebug) {
+            for (let i = 0; i < 4; ++i) {
+                if (this.canMove && areaManager.isValidAreaID(this.areaList[i])) {
+                    this.debugDrawList[i].setVisible(true);
+                    this.debugDrawList[i].x = areaManager.areaList[this.areaList[i]].x;
+                    this.debugDrawList[i].y = areaManager.areaList[this.areaList[i]].y;
+                } else {
+                    this.debugDrawList[i].setVisible(false);
+                }
+            }
         }
     },
     moveOutFrame: function (x, y, offsetX, offsetY) {
@@ -39,23 +71,16 @@ let Bullet = cc.Sprite.extend({
         return (x < 0 || x > cc.winSize.width);
     },
     move: function (dt) {
-        if (this.canMove) {
-            this.x += this.direction.x * 60 * this.speed * dt;
-            this.y += this.direction.y * 60 * this.speed * dt;
-        }
+        this.x += this.direction.x * 60 * this.speed * dt;
+        this.y += this.direction.y * 60 * this.speed * dt;
     },
     bouncing: function () {
-        // if (this.moveOutFrame(this.x, this.y, this.fighter.manager.bulletSize.width / 2, this.fighter.manager.bulletSize.height / 2)) {
-        //     this.fighter.bulletPool.pushBack(this.poolID);
-        //     this.unscheduleUpdate();
-        //     return;
-        // }
-        if (this.x <= 0 || this.x >= cc.winSize.width || this.y <= 0 || this.y >= cc.winSize.height)
-        {
+        if (this.x <= 0 || this.x >= cc.winSize.width || this.y <= 0 || this.y >= cc.winSize.height) {
             this.fighter.bulletPool.pushBack(this.poolID);
             this.x = this.fighter.x;
             this.y = this.fighter.y;
-            this.unscheduleUpdate();
+            this.canMove = false;
+            // this.unscheduleUpdate();
             return;
         }
 
@@ -91,34 +116,36 @@ let Bullet = cc.Sprite.extend({
     },
 
     collisionDetection: function () {
-        for (let i = 0; i < this.manager.enemyCount; ++i) {
-            if (this.manager.pDistance(this.x, this.y, this.manager.enemyFighterList[i].x, this.manager.enemyFighterList[i].y) < this.manager.fighterSize.width / 2) {
-                // cc.log(this.manager.pDistance(this.x, this.y, this.manager.enemyFighterPositionList[i].x, this.manager.enemyFighterPositionList[i].y));
-                // cc.log("hit", i, this.manager.enemyFighterPositionList[i].x, this.manager.enemyFighterPositionList[i].y);
-                this.unscheduleUpdate();
-                // this.manager.enemyFighterList[i].unscheduleUpdate();
-                // this.manager.enemyFighterList[i].setVisible(false);
-                if (Math.random() < 0.5) {
-                    this.manager.enemyFighterList[i].x = (Math.random() > 0.5 ? 1.1 : -0.1) * cc.winSize.width;
-                    this.manager.enemyFighterList[i].y = Math.floor(Math.random() * 10) * this.manager.fighterSize.width;
-                } else {
-                    this.manager.enemyFighterList[i].x = Math.floor(Math.random() * cc.winSize.width / this.manager.fighterSize.width) * this.manager.fighterSize.width ;
-                    this.manager.enemyFighterList[i].y = (Math.random() > 0.5 ? 1.1 : -0.1) * cc.winSize.height;
+        for (let i = 0; i < 4; ++i)
+        {
+            if (areaManager.isValidAreaID(this.areaList[i]))
+            {
+                for (let j = 0; j < areaManager.areaList[this.areaList[i]].objectCount; ++j)
+                {
+                    let entityID = areaManager.areaList[this.areaList[i]].objectList[j];
+                    if (areaManager.areaList[this.areaList[i]].objectList[j])
+                    if (intersectWithCenterBound(this, entityManager.entityList[entityID], this.manager.bulletSize.width, this.manager.bulletSize.height, this.manager.fighterSize.width, this.manager.fighterSize.height)) {
+                        cc.log("hit");
+                    }
                 }
-
-                let angle = this.manager.pAngleSigned(vectorUp.x, vectorUp.y, this.manager.enemyFighterList[i].x - this.fighter.x, this.manager.enemyFighterList[i].y - this.manager.fighter.y);
-                this.manager.enemyFighterList[i].setRotation(angle * cc.DEG);
-                this.manager.pRotateByAngleVectorOne(this.manager.enemyFighterList[i].direction, angle);
-                //
-                this.fighter.bulletPool.pushBack(this.poolID);
-                this.x = this.fighter.x;
-                this.y = this.fighter.y;
-                // cc.log(this.isVisible(), this.x, this.y);
-                return;
             }
         }
     },
     calculateDirection: function () {
         this.fighter.manager.pRotateByAngleVectorOne(this.direction, -this.getRotation() / cc.DEG);
-    }
+    },
 });
+
+let intersectionWith = function (xa, ya, xb, yb, wa, ha, wb, hb) {
+    return !(xa > xb + wb
+        || ya > yb + hb
+        || xa + wa < xb
+        || ya + ha < yb);
+}
+
+let intersectWithCenterBound = function (a, b, aw, ah, bw, bh) {
+    return !(a.x > b.x + bw / 2
+        || a.y > b.y + bh / 2
+        || a.x + aw / 2 < b.x
+        || a.y + ah / 2 < b.y);
+}

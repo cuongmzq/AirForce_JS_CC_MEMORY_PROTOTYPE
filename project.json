@@ -18,6 +18,9 @@
         "src/Bullet.js",
         "src/ObjectPool.js",
         "src/EnemyFighter.js",
-        "src/PlayerFighter.js"
+        "src/PlayerFighter.js",
+        "src/Quadtree.js",
+        "src/EntityManager.js",
+        "src/AreaManager.js"
     ]
 }

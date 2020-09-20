@@ -8,7 +8,6 @@ let PlayerFighter = Fighter.extend({
         this.speed = 10;
         this.isPressing = false;
 
-
         cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             onTouchBegan: (touch) => {
@@ -115,22 +114,17 @@ let PlayerFighter = Fighter.extend({
 
         this.x += dt * this.direction.x * this.speed * 60;
         this.y += dt * this.direction.y * this.speed * 60;
-        //
-        // this.manager.enemyFighterPositionList[this.id].x = this.x;
-        // this.manager.enemyFighterPositionList[this.id].y = this.y;
-
-        // this.setRotation(this.manager.pAngleSigned(vectorUp, this.direction) * cc.DEG);
     },
 
     fire: function () {
         if (this.bulletPool !== null) {
-            for (let i = 0; i < 3; ++i)
+            for (let i = 0; i < 1; ++i)
             {
                 this.currentBullet = this.bulletPool.takeOut();
                 if (this.currentBullet) {
                     this.currentBullet.x = this.x;
                     this.currentBullet.y = this.y;
-                    this.currentBullet.setRotation(this.getRotation() - 15 + 15 * i);
+                    this.currentBullet.setRotation(this.getRotation());
                     this.currentBullet.calculateDirection();
                     this.currentBullet.canMove = true;
                     this.currentBullet.scheduleUpdate();

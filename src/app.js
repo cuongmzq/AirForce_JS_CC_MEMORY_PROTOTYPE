@@ -2,7 +2,11 @@ let vectorUp = {x: 0, y: 1};
 let vectorDown = {x: 0, y: -1};
 let touchPosition = cc.p(0, 0);
 let touchRawPosition = cc.p(0, 0);
-// cc.log = function () {};
+cc.log = function () {};
+const X_SECTIONS = 5;
+const Y_SECTIONS = 4;
+let areaManager = null;
+let entityManager = null;
 
 let MainGameLayer = cc.Layer.extend({
     ctor: function () {
@@ -13,7 +17,11 @@ let MainGameLayer = cc.Layer.extend({
         this.enemyFighterPositionList = [];
         this.isTouching = false;
         this.playerRotateDirection = cc.p(0, 0);
-        //
+        this.timer = 1;
+
+        areaManager = new AreaManager(X_SECTIONS, Y_SECTIONS, cc.winSize.width, cc.winSize.height);
+        entityManager = new EntityManager();
+
         let bullet = new cc.Sprite(res.bullet);
         let fighter = new cc.Sprite(res.fighter);
 
@@ -24,10 +32,36 @@ let MainGameLayer = cc.Layer.extend({
         this.createFighter();
         this.setScale(1);
         this.scheduleUpdate();
+
+        this.drawDebug();
     },
 
     update: function (dt) {
-        // this.rotateFighterToTouch();
+        this.timer -= dt;
+        if (this.timer <= 0)
+        {
+            this.timer = 0.15;
+        }
+    },
+
+    drawDebug: function () {
+        let winsizeDraw = new cc.DrawNode();
+        let startPoint = cc.p(0, 0);
+        let endPoint = cc.p(cc.winSize.width, cc.winSize.height);
+
+        winsizeDraw.drawRect(startPoint,
+            endPoint,
+            cc.color(0, 0, 0, 0), 10, cc.color(0, 255, 255));
+        this.addChild(winsizeDraw, 101);
+
+        for (let i = 0; i < X_SECTIONS * Y_SECTIONS; ++i)
+        {
+            let drawNode = new cc.DrawNode();
+            let startPoint = cc.p(areaManager.areaList[i].x - areaManager.cellWidth / 2, areaManager.areaList[i].y - areaManager.cellHeight / 2);
+            let endPoint = cc.p(areaManager.areaList[i].x + areaManager.cellWidth / 2, areaManager.areaList[i].y + areaManager.cellHeight / 2)
+            drawNode.drawRect(startPoint, endPoint, cc.color(255, 255, 0, 0), 3, cc.color(255, 0, 255));
+            this.addChild(drawNode, 100);
+        }
     },
 
     pAngleSigned: function (aX, aY, bX, bY) {
@@ -53,7 +87,6 @@ let MainGameLayer = cc.Layer.extend({
                 xb = aY.x * 1.0 / nb;
                 yb = aY.y * 1.0 / nb;
             }
-
         }
         else
         {
@@ -113,7 +146,7 @@ let MainGameLayer = cc.Layer.extend({
     createFighter: function () {
         this.fighter = new PlayerFighter(this, res.fighter);
         this.fighter.id = -555;
-        this.fighter.fireRate = 0.05;
+        this.fighter.fireRate = 0.1;
         this.fighter.x = cc.winSize.width / 2;
         this.fighter.y = this.fighter.height;
 
@@ -121,11 +154,11 @@ let MainGameLayer = cc.Layer.extend({
         touchPosition.y = this.fighter.y;
 
         this.addChild(this.fighter, 5);
-        this.fighter.createBulletPool(50, true, res.bullet);
+        this.fighter.createBulletPool(10, false, res.bullet);
 
         for (let i = 0; i < this.enemyCount; ++i) {
             let enemyFighter = new EnemyFighter(this, res.enemyFighter);
-            enemyFighter.fireRate = 0.05;
+            enemyFighter.fireRate = 0.25;
             enemyFighter.id = i;
             enemyFighter.speed = Math.random() * 6 + 2;
 
@@ -143,7 +176,7 @@ let MainGameLayer = cc.Layer.extend({
             this.pRotateByAngleVectorOne(enemyFighter.direction, angle);
 
             this.addChild(enemyFighter, Math.floor(Math.random() * 8 + 4));
-            enemyFighter.createBulletPool(50, true, res.bullet_02);
+            enemyFighter.createBulletPool(10, false, res.bullet_02);
             let enemyPosition = cc.p(enemyFighter.x, enemyFighter.y);
             this.enemyFighterPositionList.push(enemyPosition);
             this.enemyFighterList.push(enemyFighter);
